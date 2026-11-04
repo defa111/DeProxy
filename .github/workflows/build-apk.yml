@@ -21,7 +21,7 @@ jobs:
       - name: Extract source
         run: |
           mkdir -p source
-          unzip -q DeProxy-source.zip -d source
+          unzip -q DeProxy-fixed-source.zip -d source
 
       - name: Setup Java
         uses: actions/setup-java@v4
