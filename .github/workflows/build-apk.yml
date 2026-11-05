@@ -25,7 +25,7 @@ jobs:
         shell: bash
         run: |
           ls -la
-          test -f DeProxy-build-fix.zip
+          test -f DeProxy-fixed-source.zip
 
       - name: Extract source
         shell: bash
@@ -39,8 +39,20 @@ jobs:
             exit 1
           fi
 
+          vpn_service="$(find "$project_dir" -type f -name AJTermuxVpnService.java -print -quit)"
+          if [ -z "$vpn_service" ]; then
+            echo "AJTermuxVpnService.java not found in extracted source" >&2
+            exit 1
+          fi
+          sed -i 's/^import android\.app\.ServiceInfo;/import android.content.pm.ServiceInfo;/' "$vpn_service"
+          if grep -q '^import android\.app\.ServiceInfo;' "$vpn_service"; then
+            echo "Failed to correct ServiceInfo import in $vpn_service" >&2
+            exit 1
+          fi
+
           echo "PROJECT_DIR=$project_dir" >> "$GITHUB_ENV"
           echo "Project dir: $project_dir"
+          echo "Corrected ServiceInfo import in $vpn_service"
 
       - name: Setup Java
         uses: actions/setup-java@v4
